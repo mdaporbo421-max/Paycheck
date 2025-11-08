@@ -1,0 +1,52 @@
+{
+  "_meta": {
+    "file": "data/singapore.json",
+    "importedAt": "2025-11-06T06:10:29Z",
+    "displayName": "Singapore"
+  },
+  "config": {
+    "preTaxAffectsSocial": false,
+    "notes": "CPF contribution rates apply by age band; use CPF Board tables for exact monthly/annual wage ceilings and Ordinary Wage / Additional Wage rules."
+  },
+  "brackets": {
+    "default": [
+      { "rate": 0.00, "upTo": 20000 },
+      { "rate": 0.02, "upTo": 30000 },
+      { "rate": 0.035, "upTo": 40000 },
+      { "rate": 0.07, "upTo": 80000 },
+      { "rate": 0.115, "upTo": 120000 },
+      { "rate": 0.15, "upTo": 160000 },
+      { "rate": 0.18, "upTo": 200000 },
+      { "rate": 0.20, "upTo": 320000 },
+      { "rate": 0.22, "upTo": null }
+    ]
+  },
+  "contributions": [
+    {
+      "key": "cpf_employee",
+      "label": "CPF (employee) - by age band",
+      "rate": 0.20,
+      "base": "gross",
+      "ceilingAnnual": null,
+      "ageBands": [
+        { "min": 0, "max": 55, "rate": 0.20 },
+        { "min": 56, "max": 65, "rate": 0.13 },
+        { "min": 66, "max": 70, "rate": 0.075 },
+        { "min": 71, "max": 200, "rate": 0.05 }
+      ],
+      "metadata": {
+        "source_url": "https://www.cpf.gov.sg/employer/cpf-contributions/rates/cpf-contribution-rates",
+        "document_title": "CPF contribution rates (employee & employer) by age band",
+        "page_or_section": "CPF contribution rates table",
+        "effective_date": "latest",
+        "quote": "CPF contributions depend on age band; wage ceilings apply to ordinary and additional wages."
+      }
+    }
+  ],
+  "employerContributions": [
+    { "key":"cpf_employer", "label":"CPF (employer) - by age band", "rate":0.17, "base":"gross", "metadata": { "source_url":"https://www.cpf.gov.sg", "document_title":"CPF Board employer contributions", "page_or_section":"Employer obligations & contribution rates", "effective_date":"latest", "quote":"Employer CPF contributions depend on employee age band." } }
+  ],
+  "sources": [
+    { "source_url":"https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-rates-for-residents-and-non-residents", "document_title":"IRAS - Tax rates for residents and non-residents", "page_or_section":"Individual income tax rates", "effective_date":"latest", "quote":"Resident progressive rates and non-resident flat rates" }
+  ]
+}

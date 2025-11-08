@@ -1,0 +1,62 @@
+{
+  "_meta": {
+    "file": "data/germany.json",
+    "importedAt": "2025-11-06T06:10:29Z",
+    "displayName": "Germany"
+  },
+  "config": {
+    "preTaxAffectsSocial": false,
+    "notes": "This file contains simplified Lohnsteuer-like bracket approximations; for audit-grade calculations ingest BMF Lohnsteuertabellen or use official Lohnsteuer formula and XML interface."
+  },
+  "brackets": {
+    "default": [
+      { "rate": 0.0, "upTo": 10908 },
+      { "rate": 0.14, "upTo": 20000 },
+      { "rate": 0.24, "upTo": 40000 },
+      { "rate": 0.42, "upTo": 100000 },
+      { "rate": 0.45, "upTo": null }
+    ]
+  },
+  "contributions": [
+    {
+      "key": "pension_employee",
+      "label": "Pension insurance - employee",
+      "rate": 0.093,
+      "base": "gross",
+      "ceilingAnnual": 87000,
+      "metadata": {
+        "source_url": "https://www.deutsche-rentenversicherung.de",
+        "document_title": "Deutsche Rentenversicherung - contribution rates & assessment ceilings",
+        "page_or_section": "Beitragsbemessungsgrenzen",
+        "effective_date": "latest",
+        "quote": "Employee pension contribution rate and annual assessment ceiling."
+      }
+    },
+    {
+      "key": "health_employee",
+      "label": "Statutory health insurance - employee",
+      "rate": 0.073,
+      "base": "gross",
+      "metadata": {
+        "source_url": "https://www.gkv-spitzenverband.de",
+        "document_title": "GKV-Spitzenverband - contribution rates",
+        "page_or_section": "Health insurance contribution rates",
+        "effective_date": "latest",
+        "quote": "Employee statutory health insurance base rate."
+      }
+    }
+  ],
+  "employerContributions": [
+    { "key": "pension_emp", "label": "Pension - employer", "rate": 0.093, "base": "gross" },
+    { "key": "health_emp", "label": "Health - employer", "rate": 0.073, "base": "gross" }
+  ],
+  "subnational": {
+    "Kirchensteuer_note": "Kirchensteuer is based on income tax by state; rates typically 8% or 9% of income tax depending on state.",
+    "Bavaria": { "kirchenPercent": 0.08 },
+    "North Rhine-Westphalia": { "kirchenPercent": 0.09 }
+  },
+  "sources": [
+    { "source_url": "https://www.bundesfinanzministerium.de", "document_title": "Bundesministerium der Finanzen - Lohnsteuer tables & guidance", "page_or_section": "Lohnsteuer", "effective_date": "latest", "quote": "Official wage tax tables and calculator (Lohnsteuerrechner)." },
+    { "source_url": "https://www.bzst.de", "document_title": "Bundeszentralamt für Steuern - Kirchensteuer", "page_or_section": "Kirchensteuer information", "effective_date": "latest", "quote": "Church tax rules and state-by-state rates." }
+  ]
+}

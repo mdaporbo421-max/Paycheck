@@ -1,0 +1,10 @@
+[
+  { "code": "united_states", "displayName": "United States" },
+  { "code": "canada", "displayName": "Canada" },
+  { "code": "switzerland", "displayName": "Switzerland" },
+  { "code": "germany", "displayName": "Germany" },
+  { "code": "ireland", "displayName": "Ireland" },
+  { "code": "new_zealand", "displayName": "New Zealand" },
+  { "code": "norway", "displayName": "Norway" },
+  { "code": "singapore", "displayName": "Singapore" }
+]

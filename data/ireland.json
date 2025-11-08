@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "file": "data/ireland.json",
+    "importedAt": "2025-11-06T06:10:29Z",
+    "displayName": "Ireland"
+  },
+  "config": {
+    "preTaxAffectsSocial": false
+  },
+  "brackets": {
+    "default": [
+      { "rate": 0.20, "upTo": 37000 },
+      { "rate": 0.40, "upTo": null }
+    ]
+  },
+  "contributions": [
+    { "key": "prsi", "label": "PRSI (employee)", "rate": 0.04, "base": "gross", "metadata": { "source_url":"https://www.gov.ie/en/publication/80e5ab-guide-to-pay-related-social-insurance-prsi-contributions-2024/", "document_title":"Guide to PRSI contributions", "page_or_section":"Rates & classes", "effective_date":"2024-01-01", "quote":"PRSI employee contribution rate and classes" } },
+    { "key": "usc", "label": "USC", "rate": 0.03, "base": "gross", "metadata": { "source_url":"https://www.revenue.ie/en/employing-people/usc/universal-social-charge.aspx", "document_title":"Universal Social Charge (USC)", "page_or_section":"USC bands and rates", "effective_date":"latest", "quote":"USC bands and rates" } }
+  ],
+  "employerContributions": [
+    { "key":"prsi_emp", "label":"Employer PRSI", "rate":0.10, "base":"gross", "metadata": { "source_url":"https://www.revenue.ie/en/employing-people/paye/index.aspx", "document_title":"Revenue - Employer PRSI guidance", "page_or_section":"Employer PRSI", "effective_date":"latest", "quote":"Employer PRSI rates & obligations" } }
+  ],
+  "sources": [
+    { "source_url":"https://www.revenue.ie/en/employing-people/paye/index.aspx", "document_title":"Revenue - PAYE", "page_or_section":"PAYE guidance and tables", "effective_date":"latest", "quote":"Official PAYE rates and employer guides." }
+  ]
+}

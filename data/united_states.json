@@ -1,0 +1,145 @@
+{
+  "_meta": {
+    "file": "data/united_states.json",
+    "importedAt": "2025-11-06T06:10:29Z",
+    "displayName": "United States",
+    "notes": "Federal brackets (single/default) and example state rates. For audit-grade results, ingest IRS Pub 15-T wage-bracket tables (per-frequency) and each state's official withholding tables (PDFs) and store PDF->row mappings."
+  },
+  "config": {
+    "preTaxAffectsSocial": false,
+    "notes": "Pre-tax retirement (401k, pretax HSA) may reduce federal taxable income; some pre-tax items may not reduce Social Security/Medicare base — consult plan type and IRS rules."
+  },
+  "brackets": {
+    "default": [
+      { "rate": 0.10, "upTo": 11000 },
+      { "rate": 0.12, "upTo": 44725 },
+      { "rate": 0.22, "upTo": 95375 },
+      { "rate": 0.24, "upTo": 182100 },
+      { "rate": 0.32, "upTo": 231250 },
+      { "rate": 0.35, "upTo": 578125 },
+      { "rate": 0.37, "upTo": null }
+    ]
+  },
+  "tables": {
+    "note": "For per-period wage-bracket lookups use IRS Pub 15-T tables keyed by pay frequency and filing status. Those tables should be parsed into tables.monthly|biweekly|weekly.{filingStatus} arrays for O(1) lookup and mapping to the PDF page/row."
+  },
+  "contributions": [
+    {
+      "key": "social_security",
+      "label": "Social Security (OASDI) - Employee",
+      "rate": 0.062,
+      "base": "gross",
+      "ceilingAnnual": 168600,
+      "excludePreTax": false,
+      "metadata": {
+        "source_url": "https://www.ssa.gov/news/press/factsheets/colafacts2024.pdf",
+        "document_title": "Social Security - Contribution and Benefit Base (SSA factsheet)",
+        "page_or_section": "Wage base and rate",
+        "effective_date": "2024-01-01",
+        "quote": "Social Security tax rate (employee) 6.2% on wages up to the annual wage base."
+      }
+    },
+    {
+      "key": "medicare",
+      "label": "Medicare (HI) - Employee",
+      "rate": 0.0145,
+      "base": "gross",
+      "ceilingAnnual": null,
+      "excludePreTax": false,
+      "metadata": {
+        "source_url": "https://www.irs.gov/publications/p15",
+        "document_title": "IRS Publication 15 (Employer's Tax Guide)",
+        "page_or_section": "Medicare tax",
+        "effective_date": "latest",
+        "quote": "Medicare tax rate 1.45% (no wage base). Additional 0.9% applies to high earners."
+      }
+    }
+  ],
+  "additionalRules": {
+    "additional_medicare": {
+      "applicable": true,
+      "employee_thresholds": {
+        "single": 200000,
+        "married_filing_joint": 250000,
+        "married_filing_separate": 125000
+      },
+      "rate": 0.009,
+      "metadata": {
+        "source_url": "https://www.irs.gov/businesses/small-businesses-self-employed/questions-and-answers-for-the-additional-medicare-tax",
+        "document_title": "Questions and Answers for the Additional Medicare Tax",
+        "page_or_section": "Additional Medicare tax rules and thresholds",
+        "effective_date": "latest",
+        "quote": "Employers must withhold Additional Medicare Tax of 0.9% on wages paid to an employee after the employee's wages exceed $200,000 in a calendar year."
+      }
+    }
+  },
+  "employerContributions": [
+    {
+      "key": "ss_emp",
+      "label": "Social Security - Employer",
+      "rate": 0.062,
+      "base": "gross",
+      "ceilingAnnual": 168600,
+      "metadata": {
+        "source_url": "https://www.irs.gov/publications/p15",
+        "document_title": "Publication 15 - Employer's Tax Guide",
+        "page_or_section": "Employer FICA",
+        "effective_date": "latest",
+        "quote": "Employer matches Social Security 6.2% up to wage base and Medicare 1.45%."
+      }
+    },
+    {
+      "key": "medicare_emp",
+      "label": "Medicare - Employer",
+      "rate": 0.0145,
+      "base": "gross",
+      "metadata": {
+        "source_url": "https://www.irs.gov/publications/p15",
+        "document_title": "Publication 15 - Employer's Tax Guide",
+        "page_or_section": "Employer FICA",
+        "effective_date": "latest",
+        "quote": "Employer Medicare share is 1.45% (no Additional Medicare employer share)."
+      }
+    },
+    {
+      "key": "futa",
+      "label": "FUTA - Federal Unemployment Tax (employer)",
+      "rate": 0.006,
+      "base": "gross",
+      "ceilingAnnual": 7000,
+      "metadata": {
+        "source_url": "https://www.irs.gov/businesses/small-businesses-self-employed/futa-tax",
+        "document_title": "Federal Unemployment Tax Act (FUTA)",
+        "page_or_section": "FUTA tax rate and wage base",
+        "effective_date": "latest",
+        "quote": "FUTA statutory rate 6.0% with credits; effective typical rate 0.6% after state credit; applied to first $7,000 of wages per employee."
+      }
+    }
+  ],
+  "subnational": {
+    "note": "State withholding rules vary significantly. For each state, ingest the state's withholding tables published by the state's Dept. of Revenue or Department of Taxation.",
+    "reference": {
+      "source_url": "https://www.taxadmin.org/state-tax-agencies",
+      "document_title": "Federation of Tax Administrators - State Tax Agencies",
+      "page_or_section": "Directory of state tax agencies",
+      "effective_date": "latest",
+      "quote": "Use each state's official pages for state-specific withholding tables and rules."
+    }
+  },
+  "sources": [
+    {
+      "source_url": "https://www.irs.gov/publications/p15t",
+      "document_title": "Publication 15-T (Federal Income Tax Withholding Methods)",
+      "page_or_section": "Wage-bracket tables & percentage method",
+      "effective_date": "latest",
+      "quote": "Primary source for per-period withholding tables and percentage method."
+    },
+    {
+      "source_url": "https://www.ssa.gov/",
+      "document_title": "Social Security Administration - official site",
+      "page_or_section": "Wage base and rate factsheets",
+      "effective_date": "latest",
+      "quote": "Source for Social Security wage base values and historical series."
+    }
+  ]
+}

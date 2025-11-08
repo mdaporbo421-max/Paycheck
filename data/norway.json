@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "file": "data/norway.json",
+    "importedAt": "2025-11-06T06:10:29Z",
+    "displayName": "Norway"
+  },
+  "config": {
+    "preTaxAffectsSocial": false
+  },
+  "brackets": {
+    "default": [
+      { "rate": 0.017, "upTo": 190350 },
+      { "rate": 0.042, "upTo": 267900 },
+      { "rate": 0.132, "upTo": 643800 },
+      { "rate": 0.162, "upTo": 969200 },
+      { "rate": 0.162, "upTo": null }
+    ]
+  },
+  "contributions": [
+    { "key":"trygde", "label":"National Insurance (trygdeavgift) - employee", "rate":0.082, "base":"gross", "metadata": { "source_url":"https://www.skatteetaten.no/en/rates/social-security-contributions/", "document_title":"Skatteetaten - Social security contribution rates", "page_or_section":"Trygdeavgift rates", "effective_date":"latest", "quote":"Employee social security contribution rates" } }
+  ],
+  "subnational": {
+    "Oslo": { "rate": 0.22, "metadata": { "source_url":"https://www.skatteetaten.no/", "document_title":"Municipal tax rates", "page_or_section":"Municipal tax rates", "effective_date":"latest" } }
+  },
+  "sources": [
+    { "source_url":"https://www.skatteetaten.no/en/rates/income-tax/", "document_title":"Skatteetaten - Income tax rates (trinnskatt)", "page_or_section":"Trinnskatt brackets", "effective_date":"latest", "quote":"Official trinnskatt rates" }
+  ]
+}

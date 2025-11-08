@@ -1,0 +1,90 @@
+{
+  "_meta": {
+    "file": "data/canada.json",
+    "importedAt": "2025-11-06T06:10:29Z",
+    "displayName": "Canada",
+    "notes": "Federal brackets and CPP/EI rates included; provincial rate entries (examples) present. For auditable per-period payroll, ingest CRA T4032 PDF tables and mapping."
+  },
+  "config": {
+    "preTaxAffectsSocial": false,
+    "notes": "CPP and EI have pensionable/insurable earnings ceilings and special provincial rules (Quebec)."
+  },
+  "brackets": {
+    "default": [
+      { "rate": 0.15, "upTo": 53359 },
+      { "rate": 0.205, "upTo": 106717 },
+      { "rate": 0.26, "upTo": 165430 },
+      { "rate": 0.29, "upTo": 235675 },
+      { "rate": 0.33, "upTo": null }
+    ]
+  },
+  "contributions": [
+    {
+      "key": "cpp_employee",
+      "label": "Canada Pension Plan (CPP) - Employee",
+      "rate": 0.057,
+      "base": "gross",
+      "ceilingAnnual": 66600,
+      "excludePreTax": false,
+      "metadata": {
+        "source_url": "https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/payroll/payroll-deductions-contributions/canada-pension-plan-cpp/cpp-contribution-rates-maximums-exemptions.html",
+        "document_title": "CPP contribution rates, maximums and exemptions",
+        "page_or_section": "Contribution rates and maximum pensionable earnings",
+        "effective_date": "latest",
+        "quote": "Employee CPP contribution rate and maximum pensionable earnings (annual)."
+      }
+    },
+    {
+      "key": "ei_employee",
+      "label": "Employment Insurance (EI) - Employee",
+      "rate": 0.0163,
+      "base": "gross",
+      "ceilingAnnual": 61500,
+      "metadata": {
+        "source_url": "https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/payroll/payroll-deductions-employment-insurance-ei.html",
+        "document_title": "Employment Insurance (EI) - Premium rates",
+        "page_or_section": "EI premium rates and maximums",
+        "effective_date": "latest",
+        "quote": "Employee EI premium rate and annual maximum insurable earnings."
+      }
+    }
+  ],
+  "employerContributions": [
+    {
+      "key": "cpp_employer",
+      "label": "CPP - Employer",
+      "rate": 0.057,
+      "base": "gross",
+      "ceilingAnnual": 66600,
+      "metadata": { "source_url": "https://www.canada.ca/en/revenue-agency", "document_title":"CPP employer contributions", "page_or_section":"CPP employer share", "effective_date":"latest", "quote":"Employer matches employee CPP contribution." }
+    },
+    {
+      "key": "ei_employer",
+      "label": "EI - Employer",
+      "rate": 0.02282,
+      "base": "gross",
+      "ceilingAnnual": 61500,
+      "metadata": { "source_url": "https://www.canada.ca/en/revenue-agency", "document_title":"EI employer contributions", "page_or_section":"EI employer multiplier", "effective_date":"latest", "quote":"Employer EI premium (multiplier) varies by province (Quebec separate rules)." }
+    }
+  ],
+  "subnational": {
+    "Ontario": { "rate": 0.0505, "metadata": { "source_url": "https://www.fin.gov.on.ca/en/tax/pit/", "document_title": "Ontario personal income tax rates", "page_or_section": "Rates & credits", "effective_date": "latest", "quote": "Provincial tax rates" } },
+    "Quebec": { "rate": 0.15, "metadata": { "source_url": "https://www.revenuquebec.ca/en/businesses/source-deductions/withholding-taxes/", "document_title": "Revenu Québec - withholding taxes", "page_or_section": "Employer source deductions", "effective_date": "latest", "quote": "Quebec provincial withholding tables & QPP/QPIP rules" } }
+  },
+  "sources": [
+    {
+      "source_url": "https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/payroll/t4032-payroll-deductions-tables.html",
+      "document_title": "T4032 Payroll Deductions Tables",
+      "page_or_section": "Payroll deduction tables (federal & provincial)",
+      "effective_date": "latest",
+      "quote": "Tables for payroll deductions by pay frequency and province."
+    },
+    {
+      "source_url": "https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/t4001/employers-guide-payroll-deductions-remittances.html",
+      "document_title": "T4001 Employers' Guide – Payroll Deductions and Remittances",
+      "page_or_section": "Employer guide",
+      "effective_date": "latest",
+      "quote": "Employer remittance and payroll deduction rules."
+    }
+  ]
+}

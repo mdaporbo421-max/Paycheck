@@ -1,0 +1,78 @@
+{
+  "_meta": {
+    "file": "data/switzerland.json",
+    "importedAt": "2025-11-06T06:10:29Z",
+    "displayName": "Switzerland"
+  },
+  "config": {
+    "preTaxAffectsSocial": false,
+    "notes": "Swiss withholding is canton/municipality-dependent (Quellensteuer). This file bundles federal social contributions and example canton multipliers; ingest canton tables per-canton for audit."
+  },
+  "brackets": {
+    "default": [
+      { "rate": 0.00, "upTo": 12000 },
+      { "rate": 0.05, "upTo": 30000 },
+      { "rate": 0.10, "upTo": 80000 },
+      { "rate": 0.15, "upTo": 150000 },
+      { "rate": 0.20, "upTo": null }
+    ]
+  },
+  "contributions": [
+    {
+      "key": "ahv_iv_eo",
+      "label": "AHV/IV/EO (employee)",
+      "rate": 0.0515,
+      "base": "gross",
+      "metadata": {
+        "source_url": "https://www.ahv-iv.ch/en/",
+        "document_title": "AHV/IV/EO contribution rates",
+        "page_or_section": "Contribution rates",
+        "effective_date": "latest",
+        "quote": "Employee contributions to AHV/IV/EO"
+      }
+    },
+    {
+      "key": "alv",
+      "label": "ALV (Unemployment) - employee",
+      "rate": 0.0145,
+      "base": "gross",
+      "ceilingAnnual": 148200,
+      "metadata": {
+        "source_url": "https://www.ahv-iv.ch/",
+        "document_title": "ALV contribution ceiling & rate",
+        "page_or_section": "Unemployment insurance",
+        "effective_date": "latest",
+        "quote": "Unemployment insurance rate and ceiling"
+      }
+    }
+  ],
+  "employerContributions": [
+    {
+      "key": "ahv_emp",
+      "label": "AHV/IV/EO (employer)",
+      "rate": 0.0515,
+      "base": "gross",
+      "metadata": { "source_url": "https://www.ahv-iv.ch/", "document_title": "AHV employer contribution", "page_or_section": "Employer share", "effective_date": "latest", "quote": "Employer AHV/IV/EO contribution rates." }
+    }
+  ],
+  "subnational": {
+    "Zürich": { "rate": 0.025, "metadata": { "source_url": "https://www.steueramt.zh.ch", "document_title": "Canton Zurich withholding", "page_or_section": "Quellensteuer rates", "effective_date": "latest" } },
+    "Geneva": { "rate": 0.035, "metadata": { "source_url": "https://www.ge.ch/impots", "document_title": "Geneva tax office", "page_or_section": "Withholding", "effective_date": "latest" } }
+  },
+  "sources": [
+    {
+      "source_url": "https://www.estv.admin.ch/estv/en/home/direkte-bundessteuer/quellensteuer.html",
+      "document_title": "Swiss Federal Tax Administration - Withholding tax (Quellensteuer)",
+      "page_or_section": "Quellensteuer tariffs and canton tables",
+      "effective_date": "latest",
+      "quote": "Official canton withholding tariffs and federal guidance"
+    },
+    {
+      "source_url": "https://www.bsv.admin.ch/bsv/en/home/social-insurances/bvg.html",
+      "document_title": "BVG / LPP (Occupational pension) thresholds",
+      "page_or_section": "Coordination/ceiling amounts",
+      "effective_date": "latest",
+      "quote": "Mandatory occupational pension (BVG) thresholds and insurable salary limits."
+    }
+  ]
+}

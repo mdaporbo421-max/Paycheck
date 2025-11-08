@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Paycheck — Remaining After Deductions (8 countries)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--bg:#f3f6f9;--card:#ffffff;--accent:#0b74f6}
+    body{font-family:Inter,system-ui,Arial;margin:0;background:var(--bg);padding:28px;color:#0f172a}
+    .container{max-width:1100px;margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px}
+    .logo{width:56px;height:56px;background:var(--accent);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .card{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.06);margin-bottom:16px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:16px}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}}
+    select,input,button{padding:10px;border-radius:8px;border:1px solid #d1d5db;font-size:14px}
+    .form-row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:10px}
+    .col{flex:1;min-width:160px}
+    .primary{background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:700;padding:10px 14px;border-radius:8px}
+    .kpis{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+    .kpi{flex:1;min-width:160px;padding:12px;border-radius:10px;background:#f8fbff;border:1px solid #e6eef9}
+    .big{font-size:18px;font-weight:700}
+    .tiny{font-size:12px;color:#6b7280}
+    .card canvas{width:100% !important; height:200px !important;}
+    #details pre{white-space:pre-wrap}
+    .small-muted{font-size:12px;color:#6b7280}
+    .region-list{max-height:220px;overflow:auto;border:1px dashed #e6eef9;padding:8px;border-radius:8px;background:#fcfdff}
+    .meta{font-size:12px;color:#6b7280;margin-top:8px}
+    .link{color:var(--accent);text-decoration:none}
+    footer{margin-top:18px;font-size:13px;color:#6b7280}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="logo">PAY</div>
+        <div>
+          <div style="font-weight:700">Paycheck — Remaining After Deductions</div>
+          <div class="tiny">8-country offline-capable demo — itemized per-period and annual breakdown</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="exportPdf" class="primary">Export PDF</button>
+        <button id="exportCsv" style="padding:10px 12px">Export CSV</button>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="form-row">
+        <div class="col">
+          <label for="country">Country</label>
+          <select id="country" style="width:100%"></select>
+        </div>
+        <div class="col">
+          <label for="region">Region / State / Canton (if applicable)</label>
+          <select id="region" style="width:100%"><option value="">(not required)</option></select>
+        </div>
+        <div class="col">
+          <label for="frequency">Pay frequency</label>
+          <select id="frequency" style="width:100%">
+            <option value="monthly">Monthly</option>
+            <option value="biweekly">Biweekly</option>
+            <option value="weekly">Weekly</option>
+            <option value="semimonthly">Semimonthly</option>
+            <option value="annual">Annual</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="col" style="flex:0 0 360px">
+          <label for="gross">Gross pay (per period)</label>
+          <input id="gross" type="number" value="3000" />
+        </div>
+
+        <div class="col">
+          <label for="filing">Filing status / tax class</label>
+          <select id="filing" style="width:100%">
+            <option value="default">Default</option>
+            <option value="single">Single</option>
+            <option value="married">Married</option>
+            <option value="head">Head</option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label for="age">Age</label>
+          <input id="age" type="number" value="30" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="col" style="flex:0 0 360px">
+          <label for="preTax">Pre-tax deduction (percent or absolute)</label>
+          <div style="display:flex;gap:8px">
+            <input id="preTaxVal" type="number" placeholder="value" style="flex:1" />
+            <select id="preTaxType" style="width:140px">
+              <option value="percent">%</option>
+              <option value="absolute">Absolute</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col">
+          <label for="extraDeduction">Extra deduction (per period)</label>
+          <input id="extraDeduction" type="number" value="0" />
+        </div>
+
+        <div class="col">
+          <label>&nbsp;</label>
+          <div style="display:flex;gap:8px">
+            <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="showEmployer" /> Show employer costs</label>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:8px">
+        <button id="calc" class="primary">Calculate</button>
+      </div>
+
+      <div class="kpis" style="margin-top:12px">
+        <div class="kpi"><div class="tiny">Gross (annual)</div><div id="grossAnnual" class="big">—</div></div>
+        <div class="kpi"><div class="tiny">Taxable income (annual)</div><div id="taxableAnnual" class="big">—</div></div>
+        <div class="kpi"><div class="tiny">Total deductions (annual)</div><div id="totalDeductions" class="big">—</div></div>
+        <div class="kpi"><div class="tiny">Net pay (annual)</div><div id="netAnnual" class="big">—</div></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card" id="leftCard">
+        <h3 style="margin:0 0 8px">Breakdown (annual & per-period)</h3>
+        <div id="breakdown" class="tiny">—</div>
+        <div class="meta" id="sources">Data sources: <span id="sourcesList">—</span></div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px">Deductions chart</h3>
+        <canvas id="chart" height="260"></canvas>
+        <div style="margin-top:10px" class="small-muted">Chart shows per-period deduction vs net pay.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px">Country data & notes (editable)</h3>
+      <div class="small-muted">This section displays the full country JSON loaded from /data. For production replace these files with the official extracted tables (wage-brackets per-frequency) and PDF→row mappings.</div>
+      <pre id="dataDump" style="max-height:260px;overflow:auto;background:#f8fbff;border-radius:8px;padding:12px;margin-top:8px"></pre>
+    </div>
+
+    <footer>Make sure the /data directory (data/{country}.json and data/index.json) is present at the same origin as this file. The app will fetch them at runtime.</footer>
+  </div>
+
+<script>
+/* ---------- Helper utilities ---------- */
+function periodsPerYear(freq){
+  return ({weekly:52,biweekly:26,semimonthly:24,monthly:12,annual:1}[freq]||12);
+}
+function fmt(n){ return (typeof n!=='number')?String(n):n.toLocaleString(undefined,{maximumFractionDigits:0}); }
+function safeNum(n){ return (typeof n==='number')?n.toLocaleString():String(n); }
+
+/* ---------- DOM refs ---------- */
+const countrySel = document.getElementById('country');
+const regionSel = document.getElementById('region');
+const frequencyEl = document.getElementById('frequency');
+const grossEl = document.getElementById('gross');
+const filingEl = document.getElementById('filing');
+const ageEl = document.getElementById('age');
+const preTaxValEl = document.getElementById('preTaxVal');
+const preTaxTypeEl = document.getElementById('preTaxType');
+const extraDedEl = document.getElementById('extraDeduction');
+const showEmployerEl = document.getElementById('showEmployer');
+
+let CURRENT_DATA = null; // will hold loaded /data/{country}.json
+
+/* ---------- Load country index (data/index.json) ---------- */
+async function loadCountryIndex(){
+  try {
+    const resp = await fetch('data/index.json', {cache: 'no-store'});
+    if (!resp.ok) throw new Error('index.json not found');
+    const list = await resp.json();
+    populateCountrySelect(list);
+    return list;
+  } catch (err) {
+    // fallback list (if /data/index.json missing) - minimal set to allow offline demo
+    const fallback = [
+      { code: "united_states", displayName: "United States" },
+      { code: "canada", displayName: "Canada" },
+      { code: "switzerland", displayName: "Switzerland" },
+      { code: "germany", displayName: "Germany" },
+      { code: "ireland", displayName: "Ireland" },
+      { code: "new_zealand", displayName: "New Zealand" },
+      { code: "norway", displayName: "Norway" },
+      { code: "singapore", displayName: "Singapore" }
+    ];
+    populateCountrySelect(fallback);
+    return fallback;
+  }
+}
+
+function populateCountrySelect(list){
+  countrySel.innerHTML = '';
+  for (const it of list){
+    const opt = document.createElement('option');
+    opt.value = it.code;
+    opt.textContent = it.displayName || it.code;
+    countrySel.appendChild(opt);
+  }
+}
+
+/* ---------- Load selected country JSON ---------- */
+async function loadCountryData(code){
+  if (!code) return null;
+  try {
+    const resp = await fetch(`data/${code}.json`, {cache: 'no-store'});
+    if (!resp.ok) throw new Error(`Country data /data/${code}.json not found (HTTP ${resp.status})`);
+    const json = await resp.json();
+    CURRENT_DATA = json;
+    populateRegionsFromData(json);
+    document.getElementById('dataDump').textContent = JSON.stringify(json, null, 2);
+    return json;
+  } catch (err) {
+    // show fallback note
+    CURRENT_DATA = null;
+    document.getElementById('dataDump').textContent = `Failed to load /data/${code}.json: ${err.message}\n\nMake sure data files are deployed alongside this HTML (data/${code}.json).`;
+    regionSel.innerHTML = '<option value="">(not available)</option>';
+    return null;
+  }
+}
+
+/* ---------- Populate regions UI from country data ---------- */
+function populateRegionsFromData(data){
+  regionSel.innerHTML = '<option value="">(not required)</option>';
+  if (!data) return;
+  if (data.ui && Array.isArray(data.ui.regions)){
+    for (const r of data.ui.regions){
+      if (!r) continue;
+      const opt = document.createElement('option'); opt.value = r; opt.textContent = r;
+      regionSel.appendChild(opt);
+    }
+    return;
+  }
+  if (data.subnational){
+    for (const key of Object.keys(data.subnational)){
+      const opt = document.createElement('option'); opt.value = key; opt.textContent = key;
+      regionSel.appendChild(opt);
+    }
+  }
+}
+
+/* ---------- Marginal tax computation (annual) ---------- */
+function computeMarginalTax(brackets, taxableAnnual){
+  if (!brackets || !brackets.length) return 0;
+  let remaining = taxableAnnual;
+  let tax = 0;
+  let lastCut = 0;
+  for (const b of brackets){
+    const cap = (b.upTo === null || b.upTo === undefined) ? Infinity : b.upTo;
+    const amount = Math.max(0, Math.min(cap - lastCut, Math.max(0, taxableAnnual - lastCut)));
+    if (amount <= 0) { lastCut = cap; continue; }
+    tax += amount * b.rate;
+    lastCut = cap;
+    if (lastCut >= taxableAnnual) break;
+  }
+  return tax;
+}
+
+/* ---------- Core calculation using loaded country data ---------- */
+function calculateAll(){
+  const code = countrySel.value;
+  if (!CURRENT_DATA){
+    alert('Country data not loaded. Ensure /data/{country}.json files are present.');
+    return;
+  }
+  const freq = frequencyEl.value;
+  const ppy = periodsPerYear(freq);
+  const grossPerPeriod = Number(grossEl.value) || 0;
+  const grossAnnual = grossPerPeriod * ppy;
+
+  // pre-tax deductions
+  let preTaxAnnual = 0;
+  const pv = Number(preTaxValEl.value || 0);
+  if (pv){
+    if (preTaxTypeEl.value === 'percent') preTaxAnnual = grossAnnual * (pv/100);
+    else preTaxAnnual = pv * ppy;
+  }
+  const extraAnnual = Number(extraDedEl.value || 0) * ppy;
+
+  // Determine taxable annual (note: some countries have standard deductions that should be applied; rely on countryData.brackets and config)
+  const taxableAnnual = Math.max(0, grossAnnual - preTaxAnnual);
+
+  // Federal/national tax using countryData.brackets default
+  let federalTax = 0;
+  if (CURRENT_DATA.brackets && CURRENT_DATA.brackets.default){
+    federalTax = computeMarginalTax(CURRENT_DATA.brackets.default, taxableAnnual);
+  }
+
+  // contributions (employee)
+  const contribLines = [];
+  let totalContrib = 0;
+  for (const c of (CURRENT_DATA.contributions||[])){
+    let base = (c.base === 'gross') ? grossAnnual : taxableAnnual;
+    if (c.ceilingAnnual) base = Math.min(base, c.ceilingAnnual);
+    let rate = c.rate;
+    if (c.ageBands && ageEl.value){
+      const age = Number(ageEl.value);
+      for (const b of c.ageBands){
+        if (age >= b.min && age <= b.max){ rate = b.rate; break; }
+      }
+    }
+    const amt = base * rate;
+    totalContrib += amt;
+    contribLines.push({ label:c.label, annual:amt, perPeriod: amt/ppy, metadata:c.metadata||{} });
+  }
+
+  // subnational
+  const region = regionSel.value;
+  const subLines = [];
+  let subAnnual = 0;
+  if (CURRENT_DATA.subnational && region && CURRENT_DATA.subnational[region]){
+    const rcfg = CURRENT_DATA.subnational[region];
+    if (rcfg.brackets){
+      const rtax = computeMarginalTax(rcfg.brackets, taxableAnnual);
+      subAnnual += rtax;
+      subLines.push({ label:`Subnational - ${region}`, annual: rtax, perPeriod: rtax/ppy, metadata: rcfg.metadata||{} });
+    } else if (rcfg.rate !== undefined){
+      const rtax = taxableAnnual * rcfg.rate;
+      subAnnual += rtax;
+      subLines.push({ label:`Subnational - ${region}`, annual: rtax, perPeriod: rtax/ppy, metadata: rcfg.metadata||{} });
+    } else if (rcfg.kirchenPercent){
+      const tax = federalTax * (rcfg.kirchenPercent || 0);
+      subAnnual += tax;
+      subLines.push({ label:`Kirchensteuer (${region})`, annual: tax, perPeriod: tax/ppy, metadata: rcfg.metadata||{} });
+    }
+  }
+
+  // surtaxes (if defined)
+  let surtaxAnnual = 0;
+  if (CURRENT_DATA.surtaxes){
+    for (const s of CURRENT_DATA.surtaxes){
+      if (s.type === 'percent') surtaxAnnual += grossAnnual * s.value;
+      else if (s.type === 'marginal') surtaxAnnual += computeMarginalTax(s.brackets, taxableAnnual);
+    }
+  }
+
+  // other deductions
+  const customAnnual = extraAnnual;
+
+  // totals
+  const totalDeductionsAnnual = federalTax + totalContrib + subAnnual + surtaxAnnual + customAnnual;
+  let netAnnual = Math.max(0, grossAnnual - totalDeductionsAnnual - preTaxAnnual);
+
+  // Employer cost summary
+  const employerLines = [];
+  let employerTotal = 0;
+  if (showEmployerEl.checked){
+    for (const ec of (CURRENT_DATA.employerContributions||[])){
+      let base = (ec.base === 'gross') ? grossAnnual : taxableAnnual;
+      if (ec.ceilingAnnual) base = Math.min(base, ec.ceilingAnnual);
+      const amt = base * ec.rate;
+      employerTotal += amt;
+      employerLines.push({ label:ec.label, annual:amt, perPeriod: amt/ppy, metadata: ec.metadata||{} });
+    }
+  }
+
+  const breakdown = {
+    country: CURRENT_DATA.displayName || countrySel.value,
+    grossPerPeriod,
+    grossAnnual,
+    preTaxAnnual,
+    taxableAnnual,
+    federalTax,
+    contributions: contribLines,
+    subnational: subLines,
+    surtaxes: surtaxAnnual,
+    other: [{ label:"Extra/garnishments", annual: customAnnual, perPeriod: customAnnual/ppy }],
+    totalDeductionsAnnual,
+    netAnnual,
+    netPerPeriod: netAnnual / ppy,
+    employer: { show: showEmployerEl.checked, total: employerTotal, lines: employerLines },
+    sources: CURRENT_DATA.sources || []
+  };
+
+  renderResults(breakdown, ppy);
+}
+
+/* ---------- Render results & chart ---------- */
+let theChart = null;
+function renderResults(breakdown, ppy){
+  document.getElementById('grossAnnual').textContent = fmt(Math.round(breakdown.grossAnnual));
+  document.getElementById('taxableAnnual').textContent = fmt(Math.round(breakdown.taxableAnnual));
+  document.getElementById('totalDeductions').textContent = fmt(Math.round(breakdown.totalDeductionsAnnual));
+  document.getElementById('netAnnual').textContent = fmt(Math.round(breakdown.netAnnual));
+
+  let html = `<div><b>Gross (annual):</b> ${fmt(Math.round(breakdown.grossAnnual))}</div>`;
+  html += `<div><b>Pre-tax deductions (annual):</b> ${fmt(Math.round(breakdown.preTaxAnnual))}</div>`;
+  html += `<div style=\"margin-top:8px\"><b>Federal / National tax (annual):</b> ${fmt(Math.round(breakdown.federalTax))}</div>`;
+
+  if (breakdown.contributions.length){
+    html += `<div style=\"margin-top:8px\"><b>Social & contributions (annual):</b><div style=\"margin-left:8px\">`;
+    for (const c of breakdown.contributions){
+      html += `<div>${c.label}: ${fmt(Math.round(c.annual))} (per period: ${fmt(Math.round(c.perPeriod))})</div>`;
+    }
+    html += `</div></div>`;
+  }
+
+  if (breakdown.subnational.length){
+    html += `<div style=\"margin-top:8px\"><b>Subnational:</b><div style=\"margin-left:8px\">`;
+    for (const s of breakdown.subnational){
+      html += `<div>${s.label}: ${fmt(Math.round(s.annual))}</div>`;
+    }
+    html += `</div></div>`;
+  }
+
+  html += `<div style=\"margin-top:8px\"><b>Other deductions:</b><div style=\"margin-left:8px\">`;
+  for (const o of breakdown.other) html += `<div>${o.label}: ${fmt(Math.round(o.annual))}</div>`;
+  html += `</div></div>`;
+
+  html += `<div style=\"margin-top:12px\"><b>Total deductions (annual):</b> ${fmt(Math.round(breakdown.totalDeductionsAnnual))}</div>`;
+  html += `<div><b>Net pay (annual):</b> ${fmt(Math.round(breakdown.netAnnual))} &nbsp; <small class=\"small-muted\">(per period: ${fmt(Math.round(breakdown.netPerPeriod))})</small></div>`;
+
+  if (breakdown.employer.show){
+    html += `<div style=\"margin-top:10px\"><b>Employer cost (annual):</b> ${fmt(Math.round(breakdown.employer.total))}`;
+    for (const l of breakdown.employer.lines) html += `<div style=\"margin-left:8px\">${l.label}: ${fmt(Math.round(l.annual))}</div>`;
+    html += `</div>`;
+  }
+
+  document.getElementById('breakdown').innerHTML = html;
+
+  const sList = (breakdown.sources||[]).map(s => `<a class=\"link\" href=\"${s.source_url}\" target=\"_blank\">${s.document_title}</a>`).join(' • ');
+  document.getElementById('sourcesList').innerHTML = sList || '—';
+
+  document.getElementById('dataDump').textContent = JSON.stringify(CURRENT_DATA, null, 2);
+
+  const perFed = Math.round(breakdown.federalTax / ppy);
+  const perContrib = Math.round((breakdown.contributions.reduce((s,c)=>s+c.annual,0))/ppy);
+  const perSub = Math.round((breakdown.subnational.reduce((s,sn)=>s+sn.annual,0))/ppy);
+  const perOther = Math.round(breakdown.other.reduce((s,o)=>s+o.annual,0)/ppy);
+  const perNet = Math.round(breakdown.netPerPeriod);
+
+  const labels = ['Federal','Social','Subnational','Other','Net pay'];
+  const data = [perFed, perContrib, perSub, perOther, perNet];
+  renderChart(labels, data);
+}
+
+function renderChart(labels, data){
+  const ctx = document.getElementById('chart').getContext('2d');
+  const bg = ['#ef4444','#f59e0b','#0ea5a4','#6366f1','#10b981'];
+  if (theChart){
+    theChart.data.labels = labels;
+    theChart.data.datasets[0].data = data;
+    theChart.update();
+    return;
+  }
+  theChart = new Chart(ctx, {
+    type: 'pie',
+    data: { labels, datasets:[{ data, backgroundColor: bg }] },
+    options:{ plugins:{legend:{position:'bottom'}}}
+  });
+}
+
+/* ---------- Export helpers ---------- */
+function exportCSV(){
+  const rows = [];
+  const code = countrySel.value;
+  const name = CURRENT_DATA?.displayName || code;
+  rows.push(['Country', name]);
+  rows.push(['Gross (per period)', grossEl.value, 'frequency', frequencyEl.value]);
+  rows.push(['Breakdown', document.getElementById('breakdown').innerText.replace(/\n/g,' | ')]);
+  const csv = rows.map(r => r.map(c=>`"` + String(c).replace(/"/g,'""') + `"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'paycheck.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+function exportPDF(){
+  if (!window.jspdf || !window.jspdf.jsPDF) return alert('PDF library not available');
+  const doc = new window.jspdf.jsPDF();
+  const title = 'Paycheck — Summary';
+  doc.setFontSize(14); doc.text(title, 14, 18);
+  const breakdownText = document.getElementById('breakdown').innerText || '';
+  const lines = doc.splitTextToSize(breakdownText, 180);
+  doc.setFontSize(10); doc.text(lines, 14, 30);
+  doc.save('paycheck-summary.pdf');
+}
+
+/* ---------- Event wiring ---------- */
+document.getElementById('calc').addEventListener('click', calculateAll);
+document.getElementById('exportCsv').addEventListener('click', exportCSV);
+document.getElementById('exportPdf').addEventListener('click', exportPDF);
+countrySel.addEventListener('change', async () => {
+  await loadCountryData(countrySel.value);
+  calculateAll();
+});
+regionSel.addEventListener('change', calculateAll);
+frequencyEl.addEventListener('change', calculateAll);
+grossEl.addEventListener('change', calculateAll);
+filingEl.addEventListener('change', calculateAll);
+ageEl.addEventListener('change', calculateAll);
+preTaxValEl.addEventListener('change', calculateAll);
+preTaxTypeEl.addEventListener('change', calculateAll);
+extraDedEl.addEventListener('change', calculateAll);
+showEmployerEl.addEventListener('change', calculateAll);
+
+/* ---------- Initialization ---------- */
+(async function init(){
+  await loadCountryIndex();
+  const first = countrySel.options[0]?.value;
+  if (first){
+    countrySel.value = first;
+    await loadCountryData(first);
+  }
+  calculateAll();
+})();
+</script>
+</body>
+</html>

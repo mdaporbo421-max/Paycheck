@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "file": "data/new_zealand.json",
+    "importedAt": "2025-11-06T06:10:29Z",
+    "displayName": "New Zealand"
+  },
+  "config": {
+    "preTaxAffectsSocial": false
+  },
+  "brackets": {
+    "default": [
+      { "rate": 0.105, "upTo": 14000 },
+      { "rate": 0.175, "upTo": 48000 },
+      { "rate": 0.30, "upTo": 70000 },
+      { "rate": 0.33, "upTo": 180000 },
+      { "rate": 0.39, "upTo": null }
+    ]
+  },
+  "contributions": [
+    { "key":"acc_earner", "label":"ACC earner's levy", "rate":0.014, "base":"gross", "metadata": { "source_url":"https://www.ird.govt.nz/employing-staff/paye/deductions/how-to-calculate-paye/acc-earners-levy", "document_title":"ACC earner's levy - IRD guidance", "page_or_section":"ACC earner's levy", "effective_date":"latest", "quote":"ACC earner's levy deducted from employee earnings." } }
+  ],
+  "employerContributions": [
+    { "key":"kiwisaver_emp", "label":"KiwiSaver employer (minimum)", "rate":0.03, "base":"gross", "metadata": { "source_url":"https://www.ird.govt.nz/kiwisaver/employers", "document_title":"KiwiSaver employer obligations", "page_or_section":"Employer contributions", "effective_date":"latest", "quote":"Employer minimum KiwiSaver contribution 3% (unless higher contractual rate)" } }
+  ],
+  "sources": [
+    { "source_url":"https://www.ird.govt.nz/employing-staff/paye", "document_title":"IRD - PAYE tables and calculators", "page_or_section":"PAYE calculators and tables", "effective_date":"latest", "quote":"Official PAYE tables and calculators for payroll deductions." }
+  ]
+}
